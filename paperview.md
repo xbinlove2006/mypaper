@@ -1,4 +1,6 @@
+```
 [TOC]
+```
 #专有名词缩写
 AF：atrial fibrillation  房颤
 AFL：atrial flutter  房扑
@@ -187,7 +189,7 @@ PPG信号0.1-0.4Hz为呼吸波信息，通过作者的信号分解过程理解�
 #7.基于光电容积脉搏波描记法的 无创血红蛋白浓度检测技术的研究
 ###期刊：博士论文
 ###作者：彭福来
-###方法：
+###方法：（主要关注了滤波的方法）
 + 1.物质对光吸收的Lambert-Beer 定律
 + 2.滤波的评价标准：信噪比、均方根误差
 + 3.噪声的消除
@@ -196,6 +198,63 @@ PPG信号0.1-0.4Hz为呼吸波信息，通过作者的信号分解过程理解�
     <font color='blue'>本文采用 FIR 滤波、IIR 滤波以及滑动平均滤波三种方法进行高频噪声的滤除。</font>
     + 3.2运动伪迹的消除
     <font color='blue'>约束独立成分分析（cICA）+自适应滤波相结合</font>
-    + 3.2.1
+        + 3.2.1 信号高频噪声滤波得到信号1
+        + 3.2.2 信号1自相关得到周期信息，根据周期信息产生参考信号
+        + 3.2.3 将信号1和参考信号经cICA算法得到不含运动干扰的信号2（丢失了幅度信息）
+        + 3.2.4 信号2作为输入，信号1作为期望，恢复信号幅度信息，得到经过处理的PPG信号 
+    ![](/images/iCIA流程图.png)
+    + 3.3 基线漂移的消除
+        + 3.3.1 中值滤波器
+            对长度为N（奇数）的窗口数据的中值去除
+        + 3.3.2 小波变换
+            用coif5小波分解，第7层的逼近系数置零，其他层重构
+        + 3.3.3 希尔伯特-黄 变换
+            主要包括经验模态分解（EMD）和希尔伯特变换两部分。信号首先经 EMD 分解成一组频率独立的振荡信号（本征模态函数 IMF），然对各 IMF 进行希尔伯特变换求出瞬时频率和瞬时相位。与小波变换相比，经验模态分解更适合处理非平稳信号，例如 PPG 等生理信号。
+            计算各 IMFs 的平均瞬时频率，将频率小于 0.5 Hz 的成分置零，然后对处理后的各 IMFs 重构原信号，得到去除基线漂移的 PPG 信号。
+#8.Motion Artifact Reduction in Photoplethysmography Using Independent Component Analysis
+###作者：Byung S. Kim and Sun K. Yoo*
+###期刊：IEEE TRANSACTIONS ON BIOMEDICAL ENGINEERING, VOL. 53, NO. 3, MARCH 2006
+###摘要：
+In
+this paper, the motion artifacts were reduced by exploiting the quasi-periodicity
+of the PPG signal and the independence between the PPG and the
+motion artifact signals. The combination of independent component analysis
+and blockinterlea ving with low-pass filtering can reduce the motion
+artifacts under the condition of general dual-wavelength measurement
+本文利用ppg信号的准周期性和ppg信号与运动伪影信号的独立性，减少了运动伪影。将独立分量分析和分块分析与低通滤波相结合，可以减少一般双波长测量条件下的运动伪影。
+###方法：（块交织）
+预处理和ICA
+预处理包括：周期检测，块交织，低通滤波，反块交织
+利用自相关估计出信号周期
+块交织：将每个周期对应的取样位置点重新排列（如：N个ppg周期由100个点组成）
+N1(1),N2(1)....组成第一个数组
+N1(2),N2(2)....组成第二个数组
+...
+N1(100),N2(100)...组成第100个数组
+$$
+ \left[
+ \begin{matrix}
+   N1(1) & N1(2) & N1(3) & \cdots &N1(100) \\
+   N2(1) & N2(2) & N2(3) & \cdots &N2(100) \\
+   \vdots & \vdots & \vdots & \ddots & \vdots \\
+   N100(1) & N100(2) & N100(3) & \cdots &N100(100) \\
+  \end{matrix}
+  \right]\tag{原矩阵}
+$$
+即将矩阵转置
+<font color='blue'>
+病人的信号怎么处理？（个人理解）
+    1.取样（2100个点取1000个点）
+    2.映射，归一化
+</font>
+Hence, the low frequency components
+and the high frequency components in block interleaved samples
+are associated with the synchronized samples (periodic PPG signal)
+and the nonsynchronized samples (noise), respectively
+个人理解：
+对应的点变化小，频率低，说明信号越有周期性，即PPG信号，否则频率高，变化大，对应噪声信号。
+
+处理后将块交织信号经过低通滤波器，过滤掉高频的噪声，再反交织还原ppg信号。
+
 
 
